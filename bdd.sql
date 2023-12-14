@@ -1,10 +1,7 @@
--- Création de la base de données TPAPI
 CREATE DATABASE TPAPI;
 
--- Utilisation de la base de données TPAPI
 USE TPAPI;
 
--- Création de la table products
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -14,7 +11,6 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Création de la table users
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -24,7 +20,6 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insertion de données d'exemple dans la table products
 INSERT INTO products (title, price, description) VALUES
 ('Clavier Mécanique Gaming', 59.99, 'Clavier mécanique RGB pour les joueurs'),
 ('Souris Gamer Sans Fil', 29.99, 'Souris sans fil avec capteur de haute précision'),
