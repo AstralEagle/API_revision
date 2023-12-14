@@ -1,42 +1,36 @@
-// const db = require("../data/data_base")
+const db = require("../data/data_base")
 const express = require('express');
 const router = express.Router();
 
 
-router.post('/signup', (req, res) => {
-  const { username, email, password } = req.body;
+router.post('/signup', async (req, res) => {
+    try {
 
-  if (!username || !email || !password) {
-    return res.status(400).json({ message: 'Toutes les informations sont requises.' });
-  }
+        const {username, email, password} = req.body;
 
-  const sanitizedUsername = username.replace(/[^\w\s]/gi, '');
-  const sanitizedEmail = email.replace(/[^\w\s@.]/gi, '');
+        if (!username || !email || !password) {
+            return res.status(400).json({message: 'Toutes les informations sont requises.'});
+        }
 
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  if (!passwordRegex.test(password)) {
-    return res.status(400).json({ message: 'Le mot de passe ne respecte pas les consignes de sécurité.' });
-  }
+        const sanitizedUsername = username.replace(/[^\w\s]/gi, '');
+        const sanitizedEmail = email.replace(/[^\w\s@.]/gi, '');
 
-  const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
-  db.query(checkEmailQuery, [sanitizedEmail], (err, result) => {
-    if (err) {
-      throw err;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({message: 'Le mot de passe ne respecte pas les consignes de sécurité.'});
+        }
+
+        const checkEmailQuery = 'SELECT * FROM users WHERE email = ?';
+        const result1 = await db.awaitQuery(checkEmailQuery, [sanitizedEmail]);
+        if (result1.length > 0)
+            throw new Error("Cet email est déjà utilisé.")
+        const addUserQuery = 'INSERT INTO users (name, email, pwd) VALUES (?, ?, ?)';
+        await db.awaitQuery(addUserQuery, [sanitizedUsername, sanitizedEmail, password]);
+        res.status(201).json({message: 'Utilisateur ajouté avec succès.'});
+    } catch (e) {
+        res.status(400).json({error: e.message});
     }
 
-    if (result.length > 0) {
-      return res.status(400).json({ message: 'Cet email est déjà utilisé.' });
-    }
-
-    const addUserQuery = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-    db.query(addUserQuery, [sanitizedUsername, sanitizedEmail, password], (err, result) => {
-      if (err) {
-        throw err;
-      }
-
-      res.status(201).json({ message: 'Utilisateur ajouté avec succès.' });
-    });
-  });
 });
 
 module.exports = router;
