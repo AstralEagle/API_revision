@@ -43,8 +43,8 @@ router.post("/add", async (req, res) => {
         if(productWithName.length)
             throw new Error("Le produit existe deja")
 
-        const query2 = "INSERT INTO products (title, price, description, created_ad) VALUES (?, ?, ?, ?)"
-        const newProduct = await db.awaitQuery(query2, [title, price, description, Date.now()])
+        const query2 = "INSERT INTO products (title, price, description) VALUES (?, ?, ?)"
+        const newProduct = await db.awaitQuery(query2, [title, price, description])
 
         if(!newProduct)
           throw new Error("Product not created")
