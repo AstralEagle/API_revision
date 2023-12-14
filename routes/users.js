@@ -33,4 +33,20 @@ router.post('/signup', async (req, res) => {
 
 });
 
+router.delete("/:id", async (req, res) => {
+    try{
+        const id = parseInt(req.params.id);
+        const query1 = "SELECT * FROM users WHERE id = ?";
+        const user = await db.awaitQuery(query1, [id]);
+        if(!user.length)
+            throw new Error("Produit introuvable")
+
+        const query2 = "DELETE FROM users WHERE id = ?"
+        await db.awaitQuery(query2, [id]);
+        res.json({message: "Utilisateur supprimer"})
+    } catch(e) {
+        res.status(400).json({error: e.message})
+    }
+});
+
 module.exports = router;
